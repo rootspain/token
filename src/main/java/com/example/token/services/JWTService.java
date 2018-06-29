@@ -1,5 +1,6 @@
 package com.example.token.services;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.Date;
 
 import static com.example.token.constants.Constant.*;
 
+@SuppressWarnings("Duplicates")
 @Service
 public class JWTService {
     /**
@@ -57,4 +59,61 @@ public class JWTService {
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         return token;//+new Date();
     }
+
+    public String checkTokenByUsername(HttpServletRequest request) throws RuntimeException {
+        String token = request.getHeader(HEADER_STRING);
+        if (token==null) {
+            return "no token found";
+        }
+
+        Claims claims = Jwts.parser().setSigningKey(SECRET)
+                .parseClaimsJws(token.replace(TOKEN_PREFIX,""))
+                .getBody();
+
+        String username = claims.getSubject();
+        System.out.println(username);
+        // проверяем в БД Redis
+        // TODO: 29.06.2018: проверить в БД
+
+        return "OK";
+    }
+
+    public String checkTokenBySession(HttpServletRequest request) throws RuntimeException {
+        String token = request.getHeader(HEADER_STRING);
+        if (token==null) {
+            return "no token found";
+        }
+
+        Claims claims = Jwts.parser().setSigningKey(SECRET)
+                .parseClaimsJws(token.replace(TOKEN_PREFIX,""))
+                .getBody();
+
+        String session = claims.getSubject();
+        System.out.println(session);
+        // проверяем в БД Redis
+        // TODO: 29.06.2018: проверить в БД
+
+        return "OK";
+    }
+
+    public String checkTokenBySessionAndUsername(HttpServletRequest request) throws RuntimeException {
+        String token = request.getHeader(HEADER_STRING);
+        if (token==null) {
+            return "no token found";
+        }
+
+        Claims claims = Jwts.parser().setSigningKey(SECRET)
+                .parseClaimsJws(token.replace(TOKEN_PREFIX,""))
+                .getBody();
+
+        String username = claims.getSubject();
+        String session = claims.getId();
+        System.out.println(session + ", " + username);
+        // проверяем в БД Redis
+        // TODO: 29.06.2018: проверить в БД
+
+        return "OK";
+    }
+
+
 }

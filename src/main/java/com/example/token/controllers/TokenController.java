@@ -18,7 +18,7 @@ public class TokenController {
     JWTService jwtService;
 
     /**
-     * Функция генерирует токен по имени потльзователя и возвращает его в виде String значения
+     * Функция генерирует токен по имени пользователя и возвращает его в виде String значения
      * @return токен в виде String значения
      */
     @RequestMapping(value="/getTokenByUsername/{username}", method = RequestMethod.GET)
@@ -37,7 +37,7 @@ public class TokenController {
     }
 
     /**
-     * Функция генерирует токен по id сессии и возвращает его в виде String значения
+     * Функция генерирует токен по id сессии и по имени пользователя, и возвращает его в виде String значения
      * @param request - http запрос
      * @return токен в виде String значения
      */
@@ -55,12 +55,51 @@ public class TokenController {
     @RequestMapping(value="/generateTokenByUsername/{username}", method = RequestMethod.GET)
     public void getToken(@PathVariable("username") String username, final HttpServletRequest request, final HttpServletResponse response){
         try {
-            //return jwtService.generateTokenByUsername(username, response);
             jwtService.generateTokenByUsername(username, response);
         } catch (IOException e) {
-            //return "";
-            //e.printStackTrace();
+
         }
     }
 
+    /**
+     * Функция проверяет токен по имени пользователя
+     * @param request - http запрос
+     * @return "OK"-в случае успеха, "error"-в случае возникновения ошибки, "no token found"-в случае отсутствия токена
+     */
+    @RequestMapping(value="/checkTokenByUsername", method = RequestMethod.GET)
+    public String checkTokenByUsername(final HttpServletRequest request){
+        try {
+            return jwtService.checkTokenByUsername(request);
+        } catch (RuntimeException e) {
+            return "error";
+        }
+    }
+
+    /**
+     * Функция проверяет токен по id сессии
+     * @param request - http запрос
+     * @return "OK"-в случае успеха, "error"-в случае возникновения ошибки, "no token found"-в случае отсутствия токена
+     */
+    @RequestMapping(value="/checkTokenBySession", method = RequestMethod.GET)
+    public String checkTokenBySession(final HttpServletRequest request){
+        try {
+            return jwtService.checkTokenBySession(request);
+        } catch (RuntimeException e) {
+            return "error";
+        }
+    }
+
+    /**
+     * Функция проверяет токен по id сессии и имени пользователя
+     * @param request - http запрос
+     * @return "OK"-в случае успеха, "error"-в случае возникновения ошибки, "no token found"-в случае отсутствия токена
+     */
+    @RequestMapping(value="/checkTokenBySessionAndUsername", method = RequestMethod.GET)
+    public String checkTokenBySessionAndUsername(final HttpServletRequest request){
+        try {
+            return jwtService.checkTokenBySessionAndUsername(request);
+        } catch (RuntimeException e) {
+            return "error";
+        }
+    }
 }
